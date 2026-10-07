@@ -698,7 +698,7 @@
 
         let isAdminLoggedIn = false;
 
-        // Default Credit Category Data
+        // Default Data List (အဖွဲ့ဝင်များ အလိုအလျောက် မြင်တွေ့နိုင်မည့် ပုံသေစာရင်း)
         const defaultNotes = [
             {
                 id: 1,
@@ -768,8 +768,14 @@
             }
         ];
 
-        // Global State Control
+        // Global State Control - Data မရှိသေးပါက မူလ Data ယူမည်
         let notesData = JSON.parse(localStorage.getItem('f1_member_notes')) || defaultNotes;
+        
+        // ဘရောက်ဇာတွင် LocalStorage မရှိသေးပါက မူလ Data ကို အလိုအလျောက် သိမ်းဆည်းပေးမည်
+        if (!localStorage.getItem('f1_member_notes')) {
+            localStorage.setItem('f1_member_notes', JSON.stringify(defaultNotes));
+        }
+
         let filteredNotesData = [...notesData];
         let currentCategory = 'Credit';
         let currentPage = 1;
@@ -980,7 +986,7 @@
             renderNotes();
         }
 
-        // Admin CRUD
+        // Admin CRUD (Note ဖြည့်စွက်/ပြင်ဆင်ရန်)
         function saveNote() {
             if (!isAdminLoggedIn) return;
 
@@ -1009,6 +1015,7 @@
                 notesData.unshift(newNote);
             }
 
+            // LocalStorage ထဲတွင် အမြဲမပြတ် သိမ်းဆည်းမည်
             localStorage.setItem('f1_member_notes', JSON.stringify(notesData));
             
             resetForm();
