@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Notes & Instructions Portal</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-body: #07090e;
+            --bg-card: rgba(15, 20, 32, 0.7);
+            --bg-card-hover: rgba(22, 30, 48, 0.85);
+            --bg-glass: rgba(18, 24, 38, 0.6);
+            
+            --border-subtle: rgba(255, 255, 255, 0.07);
+            --border-glow: rgba(99, 102, 241, 0.35);
+            
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-glow: rgba(99, 102, 241, 0.25);
+            
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-red: #f43f5e;
+            
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-dark: #64748b;
+            
+            --radius-xl: 20px;
+            --radius-lg: 14px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', 'Padauk', -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(59, 130, 246, 0.08) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            padding: 40px 24px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1320px;
+        }
+
+        /* Top Header Area */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(59, 130, 246, 0.1));
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-light);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .header-brand h2 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.4px;
+            background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-brand p {
+            font-size: 12px;
+            color: var(--text-dark);
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-main {
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            color: #ffffff;
+            border: none;
+            padding: 10px 22px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 16px var(--primary-glow);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-main:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-danger {
+            background: rgba(244, 63, 94, 0.12);
+            color: var(--accent-red);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13.5px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-danger:hover {
+            background: rgba(244, 63, 94, 0.22);
+        }
+
+        /* Admin Form Panel */
+        .admin-panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            margin-bottom: 32px;
+            display: none;
+            box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        .admin-panel.show {
+            display: block;
+            animation: fadeInDown 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-top h3 {
+            font-size: 16px;
+            color: var(--primary-light);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-secondary-amber {
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--accent-amber);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 7px 14px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 12.5px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary-amber:hover {
+            background: rgba(245, 158, 11, 0.22);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 18px;
+        }
+
+        @media (max-width: 640px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(8, 11, 18, 0.7);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+            background: rgba(8, 11, 18, 0.9);
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .btn-save {
+            background: var(--accent-green);
+            color: #ffffff;
+            border: none;
+            padding: 11px 24px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13.5px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-muted);
+            border: 1px solid var(--border-subtle);
+            padding: 11px 24px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 13.5px;
+            transition: all 0.2s;
+        }
+
+        .btn-save:hover { opacity: 0.9; }
+        .btn-cancel:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+
+        /* Filter Controls */
+        .controls-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle);
+            padding: 14px 20px;
+            border-radius: var(--radius-xl);
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+        }
+
+        .tab-item {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .tab-item.active {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(59, 130, 246, 0.12));
+            color: var(--primary-light);
+            border-color: rgba(99, 102, 241, 0.35);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-item:hover:not(.active) {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dark);
+            pointer-events: none;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px 10px 42px;
+            background: rgba(8, 11, 18, 0.6);
+            border: 1px solid var(--border-subtle);
+            border-radius: 30px;
+            color: #fff;
+            font-size: 13.5px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+            background: rgba(8, 11, 18, 0.95);
+        }
+
+        /* Grid & Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 22px;
+        }
+
+        .note-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .note-card:hover {
+            transform: translateY(-4px);
+            background: var(--bg-card-hover);
+            border-color: var(--border-glow);
+            box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.6), 0 0 20px var(--primary-glow);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.5;
+            letter-spacing: -0.2px;
+        }
+
+        .badge-cat {
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .card-content {
+            font-size: 13.5px;
+            color: #cbd5e1;
+            line-height: 1.65;
+            margin-bottom: 22px;
+            white-space: pre-wrap;
+            max-height: 150px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .card-content::-webkit-scrollbar { width: 4px; }
+        .card-content::-webkit-scrollbar-track { background: transparent; }
+        .card-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+        }
+
+        .card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 16px;
+            margin-top: auto;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .action-icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .btn-edit-act { color: var(--accent-amber); }
+        .btn-edit-act:hover { background: rgba(245, 158, 11, 0.15); }
+
+        .btn-delete-act { color: var(--accent-red); }
+        .btn-delete-act:hover { background: rgba(244, 63, 94, 0.15); }
+
+        .btn-copy {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: var(--primary-light);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: all 0.25s ease;
+            margin-left: auto;
+        }
+
+        .btn-copy:hover {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        /* Pagination Area */
+        .pagination-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 36px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-subtle);
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .per-page-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .per-page-wrap select {
+            background: var(--bg-glass);
+            color: #ffffff;
+            border: 1px solid var(--border-subtle);
+            padding: 7px 12px;
+            border-radius: var(--radius-md);
+            outline: none;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .page-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .pg-btn {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            min-width: 36px;
+            height: 36px;
+            padding: 0 10px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 13.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .pg-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .pg-btn:hover:not(.active):not(:disabled) {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+        }
+
+        .pg-btn:disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+        }
+
+        .empty-placeholder {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-dark);
+        }
+
+        .empty-placeholder svg {
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Main Top Bar -->
+        <div class="header">
+            <div class="header-brand">
+                <div class="brand-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div>
+                    <h2>Member Notes & Instructions</h2>
+                    <p>Enterprise Customer Support Quick Repository</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-main" onclick="toggleAdminPanel()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span id="adminBtnText">Admin Access</span>
+                </button>
+                <button class="btn-danger" id="btnLockAdmin" onclick="lockAdminMode()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    Lock Admin
+                </button>
+            </div>
+        </div>
+
+        <!-- Admin Form Drawer/Panel -->
+        <div class="admin-panel" id="adminPanel">
+            <div class="panel-top">
+                <h3 id="formTitle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    Note အသစ်ထည့်သွင်းရန်
+                </h3>
+                <button class="btn-secondary-amber" onclick="changeAdminPassword()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    Change Password
+                </button>
+            </div>
+
+            <input type="hidden" id="noteId">
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>ခေါင်းစဉ် (Title)</label>
+                    <input type="text" id="noteTitle" class="form-input" placeholder="ဥပမာ- Credit Score မလုံလောက်မှု အကြောင်းကြားချက်">
+                </div>
+
+                <div class="form-group">
+                    <label>အမျိုးအစား (Category)</label>
+                    <select id="noteCategory" class="form-input">
+                        <option value="Bank">Bank</option>
+                        <option value="Credit" selected>Credit</option>
+                        <option value="VIP">VIP</option>
+                        <option value="Notice">Notice</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>အကြောင်းအရာ စာသား (Content / Instructions)</label>
+                <textarea id="noteContent" class="form-input" placeholder="အချက်အလက် စာသားများကို ဤနေရာတွင် ရိုက်ထည့်ပါ..."></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-save" onclick="saveNote()">Save Note</button>
+                <button class="btn-cancel" onclick="resetForm(); toggleAdminPanel();">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Filter Controls Row -->
+        <div class="controls-card">
+            <div class="filter-tabs">
+                <button class="tab-item" onclick="filterCategory('All', this)">All</button>
+                <button class="tab-item" onclick="filterCategory('Bank', this)">Bank</button>
+                <button class="tab-item active" onclick="filterCategory('Credit', this)">Credit</button>
+                <button class="tab-item" onclick="filterCategory('VIP', this)">VIP</button>
+                <button class="tab-item" onclick="filterCategory('Notice', this)">Notice</button>
+            </div>
+
+            <div class="search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="searchInput" onkeyup="filterNotes()" placeholder="Note သို့မဟုတ် Keyword ရှာရန်...">
+            </div>
+        </div>
+
+        <!-- Cards Display Container -->
+        <div class="cards-grid" id="notesContainer"></div>
+
+        <!-- Pagination Bar -->
+        <div class="pagination-row">
+            <div class="per-page-wrap">
+                <span>တစ်မျက်နှာလျှင် ပြသရန် အရေအတွက်:</span>
+                <select id="itemsPerPageSelect" onchange="changeItemsPerPage()">
+                    <option value="4">4</option>
+                    <option value="8" selected>8</option>
+                    <option value="12">12</option>
+                    <option value="20">20</option>
+                </select>
+            </div>
+            <div class="page-buttons" id="paginationButtons"></div>
+        </div>
+    </div>
+
+    <script>
+        // Password State Management
+        function getAdminPassword() {
+            return localStorage.getItem('f1_admin_password') || "1234";
+        }
+
+        function setAdminPassword(newPassword) {
+            localStorage.setItem('f1_admin_password', newPassword);
+        }
+
+        let isAdminLoggedIn = false;
+
+        // Default Credit Category Data
+        const defaultNotes = [
+            {
+                id: 1,
+                title: "Credit Score မလုံလောက်မှု အကြောင်းကြားချက် (Insufficient Credit Score)",
+                category: "Credit",
+                content: "Mercado Libre Notification - Mercado Libre User: [6121923174] Hello, during the account balance review and withdrawal investigation process, the system detected that your credit score is insufficient."
+            },
+            {
+                id: 2,
+                title: "အကောင့် စည်းကမ်းဖောက်ဖျက်မှုနှင့် Credit ရမှတ် လျှော့ချခံရမှု",
+                category: "Credit",
+                content: "Your account has several violations and has insufficient credit points. You originally had 10 credit points, and 6 have already been deducted. Once you reach 6 points, your account will be considered complete.\n\nDo you understand?"
+            },
+            {
+                id: 3,
+                title: "ငွေထုတ်ယူရန် ကျန်ရှိသော Credit 2 မှတ် ပြန်လည်ဖြည့်တင်းရန် သတိပေးချက်",
+                category: "Credit",
+                content: "The system detected too many errors on your part, resulting in insufficient points for withdrawal. With only 4 minutes remaining, your withdrawal request cannot be approved. You must recover the 2 lost points before your funds are released, which will allow your account to return to normal and the withdrawn money to be deposited into your bank account.\n\nPlease read the above carefully; this is the result of the check I just performed for you."
+            },
+            {
+                id: 4,
+                title: "Credit Score ပြန်လည်မြှင့်တင်ခြင်း လမ်းညွှန်ချက် (Restoring Credit Score)",
+                category: "Credit",
+                content: "There's nothing to worry about. This is a normal process, and the system generates it automatically.\n\nNow you just need to restore your credit score. Once you have a normal credit score, the system will automatically approve your withdrawal request, and the funds will be deposited into your bank account."
+            },
+            {
+                id: 5,
+                title: "Credit ပြုပြင်ရန် အသုံးပြုသည့် ရန်ပုံငွေ ယာယီဖြစ်ကြောင်း အာမခံချက်",
+                category: "Credit",
+                content: "Furthermore, the funds you need now are temporary; they are only used to repair your credit history. Once your credit history has been repaired, these funds will be returned to your Mercado Libre account, and you can withdraw them whenever you want."
+            },
+            {
+                id: 6,
+                title: "ကျန်ရှိသော Credit ရမှတ် လိုအပ်ချက် အသေးစိတ်",
+                category: "Credit",
+                content: "You currently have 4 credit points, and your normal credit score is 6 points. Therefore, you only need to recover the 2 lost credit points.\n\nDo you understand?"
+            },
+            {
+                id: 7,
+                title: "အကောင့် Credit Rebuild အလိုအလျောက် စနစ်ဆောင်ရွက်မှု",
+                category: "Credit",
+                content: "Now you just need to rebuild your credit score. Once you have a normal credit score, the system will automatically process withdrawal requests and deposit the funds into your bank account without you having to do anything else."
+            },
+            {
+                id: 8,
+                title: "60,000 Pesos ငွေထုတ်ယူမှုနှင့် အကောင့်စစ်ဆေးပြီးစီးကြောင်း သတိပေးချက်",
+                category: "Credit",
+                content: "I know this money is important to you.\n\nThat's why I checked your account status beforehand, and for now, everything is fine.\n\nYou just need to improve your credit history, and any funds you withdraw will be automatically deposited into your bank account immediately. Then you can withdraw the 60,000 pesos you just paid.\n\nPlease calm down and don't worry."
+            },
+            {
+                id: 9,
+                title: "Credit Repair ပြုလုပ်ချိန် အမြန်ဆုံး ၅ မိနစ် မှ ၁၀ မိနစ် အာမခံချက်",
+                category: "Credit",
+                content: "Now you just need to find a way to repair your account's credit history. Once successfully repaired, you'll receive an immediate refund, and there won't be any more problems.\n\nI completely understand your feelings and your situation, which is why I'm trying to explain and guide you.\n\nBut don't worry, I've checked your account. Aside from the issue with your credit score, everything is in order. You just need to correct your credit score, and the funds you requested to withdraw will be deposited into your bank account immediately. Then you can withdraw the 60,000 pesos you just paid.\n\nAnd as I've already mentioned, this process is automatic and requires no further action on your part.\n\nThe repair process only takes between 5 and 10 minutes, and you'll receive your refund immediately."
+            },
+            {
+                id: 10,
+                title: "ဌာနဆိုင်ရာ Credit လိုအပ်ချက်များအတိုင်း ဆောင်ရွက်ရန် လမ်းညွှန်ချက်",
+                category: "Credit",
+                content: "I understand, but based on the current situation, your account is in perfect order and there are no issues. Now you just need to follow the requirements of the relevant department to improve your credit history and then wait for the withdrawn funds to be deposited into your bank account.\n\nThere's nothing more to do.\n\nBecause this entire repair process is automated by the system.\n\nThis time you can proceed with complete peace of mind, because I've already checked it for you and there won't be any problems.\n\nThis is the last thing you need to do."
+            },
+            {
+                id: 11,
+                title: "စနစ်စစ်ဆေးမှု ရလဒ်နှင့် အာမခံချက် (System Check Results)",
+                category: "Credit",
+                content: "Don't worry, I checked your account and, aside from this credit score issue, there are no other problems.\n\nI've sent you the system check results.\n\nYou can verify them yourself.\n\nOnce your credit score has been corrected, any funds you withdraw will be automatically deposited into your bank account immediately. You'll then be able to withdraw the 60,000 pesos you're currently paying."
+            }
+        ];
+
+        // Global State Control
+        let notesData = JSON.parse(localStorage.getItem('f1_member_notes')) || defaultNotes;
+        let filteredNotesData = [...notesData];
+        let currentCategory = 'Credit';
+        let currentPage = 1;
+        let itemsPerPage = 8;
+
+        window.onload = function() {
+            filterNotes();
+        };
+
+        // Admin Auth Flow
+        function toggleAdminPanel() {
+            if (!isAdminLoggedIn) {
+                const pass = prompt("Admin Panel သို့ ဝင်ရောက်ရန် Password ထည့်ပါ:");
+                if (pass === getAdminPassword()) {
+                    isAdminLoggedIn = true;
+                    document.getElementById('adminBtnText').innerText = "Add / Manage Note";
+                    document.getElementById('btnLockAdmin').style.display = "inline-flex";
+                    document.getElementById('adminPanel').classList.add('show');
+                    renderNotes();
+                } else if (pass !== null) {
+                    alert("Password မှားယွင်းနေပါသည်။");
+                }
+            } else {
+                const panel = document.getElementById('adminPanel');
+                panel.classList.toggle('show');
+            }
+        }
+
+        // Change Admin Password
+        function changeAdminPassword() {
+            if (!isAdminLoggedIn) return;
+
+            const currentPass = prompt("လက်ရှိ Password ကို ရိုက်ထည့်ပါ:");
+            if (currentPass === null) return;
+
+            if (currentPass !== getAdminPassword()) {
+                alert("လက်ရှိ Password မှားယွင်းနေပါသည်။");
+                return;
+            }
+
+            const newPass = prompt("Password အသစ် ရိုက်ထည့်ပါ:");
+            if (!newPass || newPass.trim() === "") {
+                alert("Password သည် လွတ်နေ၍ မရပါ။");
+                return;
+            }
+
+            const confirmPass = prompt("Password အသစ်ကို နောက်တစ်ကြိမ် အတည်ပြု ရိုက်ထည့်ပါ:");
+            if (newPass !== confirmPass) {
+                alert("Password အသစ် နှစ်ကြိမ် ကိုက်ညီမှု မရှိပါ။ ပြန်လည် ကြိုးစားပါ။");
+                return;
+            }
+
+            setAdminPassword(newPass.trim());
+            alert("Admin Password အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ။");
+        }
+
+        function lockAdminMode() {
+            isAdminLoggedIn = false;
+            document.getElementById('adminBtnText').innerText = "Admin Access";
+            document.getElementById('btnLockAdmin').style.display = "none";
+            document.getElementById('adminPanel').classList.remove('show');
+            resetForm();
+            renderNotes();
+        }
+
+        // Render UI
+        function renderNotes() {
+            const container = document.getElementById('notesContainer');
+            container.innerHTML = '';
+
+            if (filteredNotesData.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-placeholder">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <p>Note တစ်စုံတစ်ရာ မတွေ့ရှိပါ။</p>
+                    </div>`;
+                renderPaginationButtons();
+                return;
+            }
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + parseInt(itemsPerPage);
+            const pageItems = filteredNotesData.slice(startIndex, endIndex);
+
+            pageItems.forEach(note => {
+                const card = document.createElement('div');
+                card.className = 'note-card';
+
+                const adminBtns = isAdminLoggedIn ? `
+                    <div class="admin-actions">
+                        <button class="action-icon-btn btn-edit-act" onclick="editNote(${note.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            Edit
+                        </button>
+                        <button class="action-icon-btn btn-delete-act" onclick="deleteNote(${note.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            Delete
+                        </button>
+                    </div>` : '';
+
+                card.innerHTML = `
+                    <div>
+                        <div class="card-top">
+                            <span class="card-title">${escapeHTML(note.title)}</span>
+                            <span class="badge-cat">${escapeHTML(note.category)}</span>
+                        </div>
+                        <div class="card-content" id="text-${note.id}">${escapeHTML(note.content)}</div>
+                    </div>
+                    <div class="card-bottom">
+                        ${adminBtns}
+                        <button class="btn-copy" onclick="copyNoteText('text-${note.id}', this)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            Copy Text
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            renderPaginationButtons();
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        // Clipboard Copy Action
+        function copyNoteText(elementId, btn) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Copied!`;
+                btn.style.background = 'var(--accent-green)';
+                btn.style.color = '#ffffff';
+                btn.style.borderColor = 'var(--accent-green)';
+
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                    btn.style.borderColor = '';
+                }, 2000);
+            });
+        }
+
+        // Filtering & Search
+        function filterCategory(category, element) {
+            currentCategory = category;
+            document.querySelectorAll('.tab-item').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            filterNotes();
+        }
+
+        function filterNotes() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            filteredNotesData = notesData.filter(note => {
+                const matchesCategory = currentCategory === 'All' || note.category === currentCategory;
+                const matchesSearch = note.title.toLowerCase().includes(query) || note.content.toLowerCase().includes(query);
+                return matchesCategory && matchesSearch;
+            });
+            currentPage = 1;
+            renderNotes();
+        }
+
+        // Pagination Controls
+        function renderPaginationButtons() {
+            const btnContainer = document.getElementById('paginationButtons');
+            btnContainer.innerHTML = '';
+
+            const totalPages = Math.ceil(filteredNotesData.length / itemsPerPage);
+            if (totalPages <= 1) return;
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'pg-btn';
+            prevBtn.innerHTML = '‹';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => goToPage(currentPage - 1);
+            btnContainer.appendChild(prevBtn);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `pg-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.innerText = i;
+                pageBtn.onclick = () => goToPage(i);
+                btnContainer.appendChild(pageBtn);
+            }
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'pg-btn';
+            nextBtn.innerHTML = '›';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => goToPage(currentPage + 1);
+            btnContainer.appendChild(nextBtn);
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderNotes();
+        }
+
+        function changeItemsPerPage() {
+            itemsPerPage = parseInt(document.getElementById('itemsPerPageSelect').value);
+            currentPage = 1;
+            renderNotes();
+        }
+
+        // Admin CRUD
+        function saveNote() {
+            if (!isAdminLoggedIn) return;
+
+            const id = document.getElementById('noteId').value;
+            const title = document.getElementById('noteTitle').value.trim();
+            const category = document.getElementById('noteCategory').value;
+            const content = document.getElementById('noteContent').value.trim();
+
+            if (!title || !content) {
+                alert('ကျေးဇူးပြု၍ Title နှင့် Content နှစ်ခုလုံး ဖြည့်စွက်ပေးပါ။');
+                return;
+            }
+
+            if (id) {
+                const index = notesData.findIndex(n => n.id == id);
+                if (index !== -1) {
+                    notesData[index] = { id: Number(id), title, category, content };
+                }
+            } else {
+                const newNote = {
+                    id: Date.now(),
+                    title,
+                    category,
+                    content
+                };
+                notesData.unshift(newNote);
+            }
+
+            localStorage.setItem('f1_member_notes', JSON.stringify(notesData));
+            
+            resetForm();
+            toggleAdminPanel();
+            filterNotes();
+        }
+
+        function editNote(id) {
+            if (!isAdminLoggedIn) return;
+
+            const note = notesData.find(n => n.id === id);
+            if (!note) return;
+
+            document.getElementById('noteId').value = note.id;
+            document.getElementById('noteTitle').value = note.title;
+            document.getElementById('noteCategory').value = note.category;
+            document.getElementById('noteContent').value = note.content;
+            document.getElementById('formTitle').innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                Note ပြင်ဆင်ရန်`;
+
+            const panel = document.getElementById('adminPanel');
+            if (!panel.classList.contains('show')) {
+                panel.classList.add('show');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteNote(id) {
+            if (!isAdminLoggedIn) return;
+
+            if (confirm('ဤ Note ကို ဖျက်ရန် သေချာပါသလား?')) {
+                notesData = notesData.filter(n => n.id !== id);
+                localStorage.setItem('f1_member_notes', JSON.stringify(notesData));
+                filterNotes();
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('noteId').value = '';
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteCategory').value = 'Credit';
+            document.getElementById('noteContent').value = '';
+            document.getElementById('formTitle').innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                Note အသစ်ထည့်သွင်းရန်`;
+        }
+    </script>
+</body>
+</html>
