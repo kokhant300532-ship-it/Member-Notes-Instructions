@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Notes & Instructions Portal</title>
+    <title>Enterprise Notes & Instructions Portal (Live Sync)</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -435,13 +435,6 @@
             padding-right: 6px;
         }
 
-        .card-content::-webkit-scrollbar { width: 4px; }
-        .card-content::-webkit-scrollbar-track { background: transparent; }
-        .card-content::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 4px;
-        }
-
         .card-bottom {
             display: flex;
             justify-content: space-between;
@@ -576,11 +569,6 @@
             padding: 80px 20px;
             color: var(--text-dark);
         }
-
-        .empty-placeholder svg {
-            margin-bottom: 16px;
-            opacity: 0.3;
-        }
     </style>
 </head>
 <body>
@@ -594,7 +582,7 @@
                 </div>
                 <div>
                     <h2>Member Notes & Instructions</h2>
-                    <p>Enterprise Customer Support Quick Repository</p>
+                    <p>Enterprise Customer Support Quick Repository (Live Sync)</p>
                 </div>
             </div>
             <div class="header-actions">
@@ -609,7 +597,7 @@
             </div>
         </div>
 
-        <!-- Admin Form Drawer/Panel -->
+        <!-- Admin Form Panel -->
         <div class="admin-panel" id="adminPanel">
             <div class="panel-top">
                 <h3 id="formTitle">
@@ -652,7 +640,7 @@
             </div>
         </div>
 
-        <!-- Filter Controls Row -->
+        <!-- Filter Controls -->
         <div class="controls-card">
             <div class="filter-tabs">
                 <button class="tab-item" onclick="filterCategory('All', this)">All</button>
@@ -686,110 +674,94 @@
         </div>
     </div>
 
-    <script>
-        // Password State Management
-        function getAdminPassword() {
-            return localStorage.getItem('f1_admin_password') || "1234";
-        }
+    <!-- Firebase SDK (Version 9 Modern Modular System) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        function setAdminPassword(newPassword) {
-            localStorage.setItem('f1_admin_password', newPassword);
-        }
+        // ⚠️ မိမိ၏ Firebase Console မှ ရရှိသော Configuration Data ဖြင့် လဲလှယ်ပေးပါ
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
 
-        let isAdminLoggedIn = false;
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const notesRef = ref(db, 'notes');
 
-        // Default Data List (အဖွဲ့ဝင်များ အလိုအလျောက် မြင်တွေ့နိုင်မည့် ပုံသေစာရင်း)
-        const defaultNotes = [
-            {
-                id: 1,
-                title: "Credit Score မလုံလောက်မှု အကြောင်းကြားချက် (Insufficient Credit Score)",
-                category: "Credit",
-                content: "Mercado Libre Notification - Mercado Libre User: [6121923174] Hello, during the account balance review and withdrawal investigation process, the system detected that your credit score is insufficient."
-            },
-            {
-                id: 2,
-                title: "အကောင့် စည်းကမ်းဖောက်ဖျက်မှုနှင့် Credit ရမှတ် လျှော့ချခံရမှု",
-                category: "Credit",
-                content: "Your account has several violations and has insufficient credit points. You originally had 10 credit points, and 6 have already been deducted. Once you reach 6 points, your account will be considered complete.\n\nDo you understand?"
-            },
-            {
-                id: 3,
-                title: "ငွေထုတ်ယူရန် ကျန်ရှိသော Credit 2 မှတ် ပြန်လည်ဖြည့်တင်းရန် သတိပေးချက်",
-                category: "Credit",
-                content: "The system detected too many errors on your part, resulting in insufficient points for withdrawal. With only 4 minutes remaining, your withdrawal request cannot be approved. You must recover the 2 lost points before your funds are released, which will allow your account to return to normal and the withdrawn money to be deposited into your bank account.\n\nPlease read the above carefully; this is the result of the check I just performed for you."
-            },
-            {
-                id: 4,
-                title: "Credit Score ပြန်လည်မြှင့်တင်ခြင်း လမ်းညွှန်ချက် (Restoring Credit Score)",
-                category: "Credit",
-                content: "There's nothing to worry about. This is a normal process, and the system generates it automatically.\n\nNow you just need to restore your credit score. Once you have a normal credit score, the system will automatically approve your withdrawal request, and the funds will be deposited into your bank account."
-            },
-            {
-                id: 5,
-                title: "Credit ပြုပြင်ရန် အသုံးပြုသည့် ရန်ပုံငွေ ယာယီဖြစ်ကြောင်း အာမခံချက်",
-                category: "Credit",
-                content: "Furthermore, the funds you need now are temporary; they are only used to repair your credit history. Once your credit history has been repaired, these funds will be returned to your Mercado Libre account, and you can withdraw them whenever you want."
-            },
-            {
-                id: 6,
-                title: "ကျန်ရှိသော Credit ရမှတ် လိုအပ်ချက် အသေးစိတ်",
-                category: "Credit",
-                content: "You currently have 4 credit points, and your normal credit score is 6 points. Therefore, you only need to recover the 2 lost credit points.\n\nDo you understand?"
-            },
-            {
-                id: 7,
-                title: "အကောင့် Credit Rebuild အလိုအလျောက် စနစ်ဆောင်ရွက်မှု",
-                category: "Credit",
-                content: "Now you just need to rebuild your credit score. Once you have a normal credit score, the system will automatically process withdrawal requests and deposit the funds into your bank account without you having to do anything else."
-            },
-            {
-                id: 8,
-                title: "60,000 Pesos ငွေထုတ်ယူမှုနှင့် အကောင့်စစ်ဆေးပြီးစီးကြောင်း သတိပေးချက်",
-                category: "Credit",
-                content: "I know this money is important to you.\n\nThat's why I checked your account status beforehand, and for now, everything is fine.\n\nYou just need to improve your credit history, and any funds you withdraw will be automatically deposited into your bank account immediately. Then you can withdraw the 60,000 pesos you just paid.\n\nPlease calm down and don't worry."
-            },
-            {
-                id: 9,
-                title: "Credit Repair ပြုလုပ်ချိန် အမြန်ဆုံး ၅ မိနစ် မှ ၁၀ မိနစ် အာမခံချက်",
-                category: "Credit",
-                content: "Now you just need to find a way to repair your account's credit history. Once successfully repaired, you'll receive an immediate refund, and there won't be any more problems.\n\nI completely understand your feelings and your situation, which is why I'm trying to explain and guide you.\n\nBut don't worry, I've checked your account. Aside from the issue with your credit score, everything is in order. You just need to correct your credit score, and the funds you requested to withdraw will be deposited into your bank account immediately. Then you can withdraw the 60,000 pesos you just paid.\n\nAnd as I've already mentioned, this process is automatic and requires no further action on your part.\n\nThe repair process only takes between 5 and 10 minutes, and you'll receive your refund immediately."
-            },
-            {
-                id: 10,
-                title: "ဌာနဆိုင်ရာ Credit လိုအပ်ချက်များအတိုင်း ဆောင်ရွက်ရန် လမ်းညွှန်ချက်",
-                category: "Credit",
-                content: "I understand, but based on the current situation, your account is in perfect order and there are no issues. Now you just need to follow the requirements of the relevant department to improve your credit history and then wait for the withdrawn funds to be deposited into your bank account.\n\nThere's nothing more to do.\n\nBecause this entire repair process is automated by the system.\n\nThis time you can proceed with complete peace of mind, because I've already checked it for you and there won't be any problems.\n\nThis is the last thing you need to do."
-            },
-            {
-                id: 11,
-                title: "စနစ်စစ်ဆေးမှု ရလဒ်နှင့် အာမခံချက် (System Check Results)",
-                category: "Credit",
-                content: "Don't worry, I checked your account and, aside from this credit score issue, there are no other problems.\n\nI've sent you the system check results.\n\nYou can verify them yourself.\n\nOnce your credit score has been corrected, any funds you withdraw will be automatically deposited into your bank account immediately. You'll then be able to withdraw the 60,000 pesos you're currently paying."
-            }
-        ];
-
-        // Global State Control - Data မရှိသေးပါက မူလ Data ယူမည်
-        let notesData = JSON.parse(localStorage.getItem('f1_member_notes')) || defaultNotes;
-        
-        // ဘရောက်ဇာတွင် LocalStorage မရှိသေးပါက မူလ Data ကို အလိုအလျောက် သိမ်းဆည်းပေးမည်
-        if (!localStorage.getItem('f1_member_notes')) {
-            localStorage.setItem('f1_member_notes', JSON.stringify(defaultNotes));
-        }
-
-        let filteredNotesData = [...notesData];
+        let notesData = [];
+        let filteredNotesData = [];
         let currentCategory = 'Credit';
         let currentPage = 1;
         let itemsPerPage = 8;
+        let isAdminLoggedIn = false;
 
-        window.onload = function() {
+        // Firebase မှ Live Real-time Data ရယူခြင်း
+        onValue(notesRef, (snapshot) => {
+            const data = snapshot.val();
+            notesData = [];
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    notesData.push({ id: key, ...data[key] });
+                });
+            }
             filterNotes();
+        });
+
+        // Window/Global Scope သို့ Function များ ပို့ပေးခြင်း
+        window.saveNote = function() {
+            if (!isAdminLoggedIn) return;
+
+            const id = document.getElementById('noteId').value || Date.now().toString();
+            const title = document.getElementById('noteTitle').value.trim();
+            const category = document.getElementById('noteCategory').value;
+            const content = document.getElementById('noteContent').value.trim();
+
+            if (!title || !content) {
+                alert('ကျေးဇူးပြု၍ Title နှင့် Content နှစ်ခုလုံး ဖြည့်စွက်ပေးပါ။');
+                return;
+            }
+
+            set(ref(db, 'notes/' + id), { title, category, content })
+                .then(() => {
+                    resetForm();
+                    toggleAdminPanel();
+                })
+                .catch((err) => alert("Error: " + err.message));
         };
 
-        // Admin Auth Flow
-        function toggleAdminPanel() {
+        window.deleteNote = function(id) {
+            if (!isAdminLoggedIn) return;
+            if (confirm('ဤ Note ကို ဖျက်ရန် သေချာပါသလား?')) {
+                remove(ref(db, 'notes/' + id));
+            }
+        };
+
+        window.editNote = function(id) {
+            if (!isAdminLoggedIn) return;
+
+            const note = notesData.find(n => n.id == id);
+            if (!note) return;
+
+            document.getElementById('noteId').value = note.id;
+            document.getElementById('noteTitle').value = note.title;
+            document.getElementById('noteCategory').value = note.category;
+            document.getElementById('noteContent').value = note.content;
+
+            const panel = document.getElementById('adminPanel');
+            if (!panel.classList.contains('show')) panel.classList.add('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.toggleAdminPanel = function() {
             if (!isAdminLoggedIn) {
                 const pass = prompt("Admin Panel သို့ ဝင်ရောက်ရန် Password ထည့်ပါ:");
-                if (pass === getAdminPassword()) {
+                if (pass === (localStorage.getItem('f1_admin_password') || "1234")) {
                     isAdminLoggedIn = true;
                     document.getElementById('adminBtnText').innerText = "Add / Manage Note";
                     document.getElementById('btnLockAdmin').style.display = "inline-flex";
@@ -799,59 +771,43 @@
                     alert("Password မှားယွင်းနေပါသည်။");
                 }
             } else {
-                const panel = document.getElementById('adminPanel');
-                panel.classList.toggle('show');
+                document.getElementById('adminPanel').classList.toggle('show');
             }
-        }
+        };
 
-        // Change Admin Password
-        function changeAdminPassword() {
-            if (!isAdminLoggedIn) return;
-
-            const currentPass = prompt("လက်ရှိ Password ကို ရိုက်ထည့်ပါ:");
-            if (currentPass === null) return;
-
-            if (currentPass !== getAdminPassword()) {
-                alert("လက်ရှိ Password မှားယွင်းနေပါသည်။");
-                return;
-            }
-
-            const newPass = prompt("Password အသစ် ရိုက်ထည့်ပါ:");
-            if (!newPass || newPass.trim() === "") {
-                alert("Password သည် လွတ်နေ၍ မရပါ။");
-                return;
-            }
-
-            const confirmPass = prompt("Password အသစ်ကို နောက်တစ်ကြိမ် အတည်ပြု ရိုက်ထည့်ပါ:");
-            if (newPass !== confirmPass) {
-                alert("Password အသစ် နှစ်ကြိမ် ကိုက်ညီမှု မရှိပါ။ ပြန်လည် ကြိုးစားပါ။");
-                return;
-            }
-
-            setAdminPassword(newPass.trim());
-            alert("Admin Password အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ။");
-        }
-
-        function lockAdminMode() {
+        window.lockAdminMode = function() {
             isAdminLoggedIn = false;
             document.getElementById('adminBtnText').innerText = "Admin Access";
             document.getElementById('btnLockAdmin').style.display = "none";
             document.getElementById('adminPanel').classList.remove('show');
             resetForm();
             renderNotes();
-        }
+        };
 
-        // Render UI
+        window.filterCategory = function(category, element) {
+            currentCategory = category;
+            document.querySelectorAll('.tab-item').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            filterNotes();
+        };
+
+        window.filterNotes = function() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            filteredNotesData = notesData.filter(note => {
+                const matchesCategory = currentCategory === 'All' || note.category === currentCategory;
+                const matchesSearch = note.title.toLowerCase().includes(query) || note.content.toLowerCase().includes(query);
+                return matchesCategory && matchesSearch;
+            });
+            currentPage = 1;
+            renderNotes();
+        };
+
         function renderNotes() {
             const container = document.getElementById('notesContainer');
             container.innerHTML = '';
 
             if (filteredNotesData.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-placeholder">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        <p>Note တစ်စုံတစ်ရာ မတွေ့ရှိပါ။</p>
-                    </div>`;
+                container.innerHTML = `<div class="empty-placeholder"><p>Note တစ်စုံတစ်ရာ မတွေ့ရှိပါ။</p></div>`;
                 renderPaginationButtons();
                 return;
             }
@@ -866,14 +822,8 @@
 
                 const adminBtns = isAdminLoggedIn ? `
                     <div class="admin-actions">
-                        <button class="action-icon-btn btn-edit-act" onclick="editNote(${note.id})">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                            Edit
-                        </button>
-                        <button class="action-icon-btn btn-delete-act" onclick="deleteNote(${note.id})">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                            Delete
-                        </button>
+                        <button class="action-icon-btn btn-edit-act" onclick="editNote('${note.id}')">Edit</button>
+                        <button class="action-icon-btn btn-delete-act" onclick="deleteNote('${note.id}')">Delete</button>
                     </div>` : '';
 
                 card.innerHTML = `
@@ -886,10 +836,7 @@
                     </div>
                     <div class="card-bottom">
                         ${adminBtns}
-                        <button class="btn-copy" onclick="copyNoteText('text-${note.id}', this)">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                            Copy Text
-                        </button>
+                        <button class="btn-copy" onclick="copyNoteText('text-${note.id}', this)">Copy Text</button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -898,53 +845,6 @@
             renderPaginationButtons();
         }
 
-        function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
-        }
-
-        // Clipboard Copy Action
-        function copyNoteText(elementId, btn) {
-            const text = document.getElementById(elementId).innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                const originalHTML = btn.innerHTML;
-                btn.innerHTML = `
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Copied!`;
-                btn.style.background = 'var(--accent-green)';
-                btn.style.color = '#ffffff';
-                btn.style.borderColor = 'var(--accent-green)';
-
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                    btn.style.background = '';
-                    btn.style.color = '';
-                    btn.style.borderColor = '';
-                }, 2000);
-            });
-        }
-
-        // Filtering & Search
-        function filterCategory(category, element) {
-            currentCategory = category;
-            document.querySelectorAll('.tab-item').forEach(btn => btn.classList.remove('active'));
-            element.classList.add('active');
-            filterNotes();
-        }
-
-        function filterNotes() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            filteredNotesData = notesData.filter(note => {
-                const matchesCategory = currentCategory === 'All' || note.category === currentCategory;
-                const matchesSearch = note.title.toLowerCase().includes(query) || note.content.toLowerCase().includes(query);
-                return matchesCategory && matchesSearch;
-            });
-            currentPage = 1;
-            renderNotes();
-        }
-
-        // Pagination Controls
         function renderPaginationButtons() {
             const btnContainer = document.getElementById('paginationButtons');
             btnContainer.innerHTML = '';
@@ -952,117 +852,41 @@
             const totalPages = Math.ceil(filteredNotesData.length / itemsPerPage);
             if (totalPages <= 1) return;
 
-            const prevBtn = document.createElement('button');
-            prevBtn.className = 'pg-btn';
-            prevBtn.innerHTML = '‹';
-            prevBtn.disabled = currentPage === 1;
-            prevBtn.onclick = () => goToPage(currentPage - 1);
-            btnContainer.appendChild(prevBtn);
-
             for (let i = 1; i <= totalPages; i++) {
                 const pageBtn = document.createElement('button');
                 pageBtn.className = `pg-btn ${i === currentPage ? 'active' : ''}`;
                 pageBtn.innerText = i;
-                pageBtn.onclick = () => goToPage(i);
+                pageBtn.onclick = () => { currentPage = i; renderNotes(); };
                 btnContainer.appendChild(pageBtn);
             }
-
-            const nextBtn = document.createElement('button');
-            nextBtn.className = 'pg-btn';
-            nextBtn.innerHTML = '›';
-            nextBtn.disabled = currentPage === totalPages;
-            nextBtn.onclick = () => goToPage(currentPage + 1);
-            btnContainer.appendChild(nextBtn);
         }
 
-        function goToPage(page) {
-            currentPage = page;
-            renderNotes();
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
         }
 
-        function changeItemsPerPage() {
-            itemsPerPage = parseInt(document.getElementById('itemsPerPageSelect').value);
-            currentPage = 1;
-            renderNotes();
-        }
+        window.copyNoteText = function(elementId, btn) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.innerText = "Copied!";
+                setTimeout(() => btn.innerText = "Copy Text", 2000);
+            });
+        };
 
-        // Admin CRUD (Note ဖြည့်စွက်/ပြင်ဆင်ရန်)
-        function saveNote() {
-            if (!isAdminLoggedIn) return;
-
-            const id = document.getElementById('noteId').value;
-            const title = document.getElementById('noteTitle').value.trim();
-            const category = document.getElementById('noteCategory').value;
-            const content = document.getElementById('noteContent').value.trim();
-
-            if (!title || !content) {
-                alert('ကျေးဇူးပြု၍ Title နှင့် Content နှစ်ခုလုံး ဖြည့်စွက်ပေးပါ။');
-                return;
-            }
-
-            if (id) {
-                const index = notesData.findIndex(n => n.id == id);
-                if (index !== -1) {
-                    notesData[index] = { id: Number(id), title, category, content };
-                }
-            } else {
-                const newNote = {
-                    id: Date.now(),
-                    title,
-                    category,
-                    content
-                };
-                notesData.unshift(newNote);
-            }
-
-            // LocalStorage ထဲတွင် အမြဲမပြတ် သိမ်းဆည်းမည်
-            localStorage.setItem('f1_member_notes', JSON.stringify(notesData));
-            
-            resetForm();
-            toggleAdminPanel();
-            filterNotes();
-        }
-
-        function editNote(id) {
-            if (!isAdminLoggedIn) return;
-
-            const note = notesData.find(n => n.id === id);
-            if (!note) return;
-
-            document.getElementById('noteId').value = note.id;
-            document.getElementById('noteTitle').value = note.title;
-            document.getElementById('noteCategory').value = note.category;
-            document.getElementById('noteContent').value = note.content;
-            document.getElementById('formTitle').innerHTML = `
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                Note ပြင်ဆင်ရန်`;
-
-            const panel = document.getElementById('adminPanel');
-            if (!panel.classList.contains('show')) {
-                panel.classList.add('show');
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function deleteNote(id) {
-            if (!isAdminLoggedIn) return;
-
-            if (confirm('ဤ Note ကို ဖျက်ရန် သေချာပါသလား?')) {
-                notesData = notesData.filter(n => n.id !== id);
-                localStorage.setItem('f1_member_notes', JSON.stringify(notesData));
-                filterNotes();
-            }
-        }
-
-        function resetForm() {
+        window.resetForm = function() {
             document.getElementById('noteId').value = '';
             document.getElementById('noteTitle').value = '';
             document.getElementById('noteCategory').value = 'Credit';
             document.getElementById('noteContent').value = '';
-            document.getElementById('formTitle').innerHTML = `
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                Note အသစ်ထည့်သွင်းရန်`;
-        }
+        };
+
+        window.changeAdminPassword = function() {
+            const newPass = prompt("Password အသစ် ရိုက်ထည့်ပါ:");
+            if (newPass) {
+                localStorage.setItem('f1_admin_password', newPass);
+                alert("Password ပြောင်းလဲပြီးပါပြီ။");
+            }
+        };
     </script>
 </body>
 </html>
